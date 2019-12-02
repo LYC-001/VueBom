@@ -21,6 +21,7 @@
 				数据阶数列  	2 
 				
 			Bom头部
+				field_name field_no  cell_type(SYS:必须, DIY:系统自定义(1), SHOW:显示字段), CheckExist
 				模版编码 	"标准样式"
 				配方号*		-1		BOM_NO		
 				物料编码*   3       PRD_NO    					检查存在 PRDT.PRD_NO
@@ -33,6 +34,7 @@
 				备注		10		REM				
 				
 			BOM表身
+				
 				模版编码 	"标准样式"
 				物料编码*   3       PRD_NO    					检查存在 PRDT.PRD_NO
 				物料名称*   4       PRD_NAME  		
@@ -76,4 +78,40 @@
 		在订单介面,下拉选择时,需不需要支持多选?
 		如果被替换的是个半成品Bom A, 并且Bom A下面也有一个X0001替换品货号,这种情况要不要考虑?
 	
-	什么时候方便给我安装 T8,与Sunlike?
+	什么时候方便给我安装 T8,与Sunlike?   OK
+
+12.1
+12.2
+	CREATE TABLE [dbo].[GAO_ExcelFormat_Header](
+		[id] [int] IDENTITY(100,2) NOT NULL,
+		[Format_No] [varchar](30) NULL,
+		[Prd_No_Pos] [varchar](30) NULL,
+		Dept_No_Pos [varchar](30) NULL,
+		Id_No_Pos  [varchar](30) NULL,
+		WH_Form_Type  int default 1,
+		Bom_Place  int default 1,
+		Start_Row int default 0,
+		Bom_Struct_Cell int default 0,
+	) ON [PRIMARY]
+
+	GO
+	 
+		CREATE TABLE [dbo].[GAO_BOMFormat_Header](
+		[id] [int] IDENTITY(100,2) NOT NULL,
+		[excel_id] [int] ,
+		[field_name] [varchar](30) NULL,
+		[field_no] [varchar](30) NULL,
+		[cell_type] [varchar](30) NOT NULL,
+		[Check_Exist] [varchar](30) NULL
+	) ON [PRIMARY]
+	GO
+
+ 	CREATE TABLE [dbo].[GAO_BOMFormat_Body](
+		[id] [int] IDENTITY(100,3) NOT NULL,
+		[excel_id] [int] ,
+		[field_name] [varchar](30) NULL,
+		[field_no] [varchar](30) NULL,
+		[cell_type] [varchar](30) NOT NULL,
+		[Check_Exist] [varchar](30) NULL
+	) ON [PRIMARY]
+	GO

@@ -11,7 +11,7 @@ export default {
 </script>
 
 <style>
-/* #app {
+/* #app {[]
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -23,4 +23,10 @@ html,body{
   padding: 0;
   margin: 0;
 }
+
+/* .el-upload-dragger{
+  width: '300px'
+} */
+
+
 </style>

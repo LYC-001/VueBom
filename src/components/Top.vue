@@ -1,57 +1,35 @@
 <template>
-<!-- <el-container>
-  <el-header>
-      <p>Header</p>
-  </el-header>
-  <el-main>
-   
-  </el-main>
-   <el-footer>Footer</el-footer>
-
-
-    
-</el-container> -->
     <div class="box">
         <div class="header">
-            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-            <el-menu-item index="1">处理中心</el-menu-item>
-            <el-submenu index="2">
-                <template slot="title">我的工作台</template>
-                <el-menu-item index="2-1">选项1</el-menu-item>
-                <el-menu-item index="2-2">选项2</el-menu-item>
-                <el-menu-item index="2-3">选项3</el-menu-item>
-                <el-submenu index="2-4">
-                <template slot="title">选项4</template>
-                <el-menu-item index="2-4-1">选项1</el-menu-item>
-                <el-menu-item index="2-4-2">选项2</el-menu-item>
-                <el-menu-item index="2-4-3">选项3</el-menu-item>
-                </el-submenu>
-            </el-submenu>
-            <el-menu-item index="3" disabled>消息中心</el-menu-item>
-            <el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>
-            </el-menu>
-
+           <el-row type="flex" >
+                <el-col :span="6"><div class="grid-content bg-purple-dark"> PIC</div></el-col>
+                <el-col :span="6" :offest="6"><div></div></el-col>
+            </el-row>
         </div>
         <div class="contain">
-
-             
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="用户管理" name="first">
-                    <HelloWorld></HelloWorld>
+                <el-tab-pane label="Bom导入工具" name="first"  >
+                    <ImportBom></ImportBom>
                 </el-tab-pane>
-                <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
-                <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
-                <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane>
+                <el-tab-pane label="Bom模版" name="second"  >
+                    <MantainExcelFormat></MantainExcelFormat>
+                </el-tab-pane>
+                <el-tab-pane label="智选Bom" name="free">智选Bom</el-tab-pane>
             </el-tabs>
-     
         </div>
-        <div class="footer">footer</div>
+        <div class="footer">
+            <el-row type="flex" justify="center" >
+                <el-col :span="12"><div class="grid-content bg-purple-dark"> XXX股份有限公司 版权所有 Copyright | 2016 XX All Rights Reserved. 粤ICP备 1234567号-1</div></el-col>
+            </el-row>
+           </div>
     </div>
 
   
 </template>
 <script>
-import HelloWorld from './HelloWorld.vue'
+import ImportBom from './ImportBom.vue'
+import MantainExcelFormat from './MantainExcelFormat.vue'
+
   export default {
     data() {
       return {
@@ -59,7 +37,8 @@ import HelloWorld from './HelloWorld.vue'
       };
     },
     components:{
-        HelloWorld
+        ImportBom,
+        MantainExcelFormat
     },
     methods: {
       handleClick(tab, event) {
@@ -77,7 +56,7 @@ import HelloWorld from './HelloWorld.vue'
     overflow: hidden;
 }
 .header{
-    height: 60px;
+    height: 40px;
     background: red;
 }
 .contain{
@@ -86,8 +65,9 @@ import HelloWorld from './HelloWorld.vue'
     overflow-y: auto;
 }
 .footer{
-    height: 60px;
-    background: gold
+    height: 30px;
+    background: '#f9fafc';
+    font-size: 12px
 }
 .mainbox{
     height: 2000px;
