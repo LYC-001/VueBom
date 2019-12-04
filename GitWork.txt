@@ -99,6 +99,7 @@
 		CREATE TABLE [dbo].[GAO_BOMFormat_Header](
 		[id] [int] IDENTITY(100,2) NOT NULL,
 		[excel_id] [int] ,
+		[type] [int] ,
 		[field_name] [varchar](30) NULL,
 		[field_no] [varchar](30) NULL,
 		[cell_type] [varchar](30) NOT NULL,
@@ -106,12 +107,11 @@
 	) ON [PRIMARY]
 	GO
 
- 	CREATE TABLE [dbo].[GAO_BOMFormat_Body](
-		[id] [int] IDENTITY(100,3) NOT NULL,
-		[excel_id] [int] ,
-		[field_name] [varchar](30) NULL,
-		[field_no] [varchar](30) NULL,
-		[cell_type] [varchar](30) NOT NULL,
-		[Check_Exist] [varchar](30) NULL
-	) ON [PRIMARY]
-	GO
+	  <el-input placeholder="请输入内容" v-model="input1">
+		<template slot="prepend">Http://</template>
+	  </el-input>
+	</div>
+	<div style="margin-top: 15px;">
+	  <el-input placeholder="请输入内容" v-model="input2">
+		<template slot="append">.com</template>
+	  </el-input>

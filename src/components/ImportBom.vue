@@ -54,16 +54,10 @@
       </el-table>
     </el-main>
   </el-container>
-
- 
-
 </template>
 
 <script>
 const axios = require('axios').default;
-
-
-
 // import Top from './Top.vue'
 export default {
   name: 'HelloWorld',
@@ -105,27 +99,29 @@ export default {
   components:{
     
   },
+  
+  methods:{
+      showList(){
+      }
+  },
+  
   mounted(){
     var me = this;
    
     me.showList();
-      axios.get("http://localhost:61106/api/bom/SearchExcelFormatList")
-            .then(function (response) {
-                me.ExcelFormats = response.data.data;
-                console.log(response);
-                console.log(me.ExcelFormats);
-            })
-            .catch(function (error) {
+    axios.get("http://localhost:61106/api/bom/SearchExcelFormatList")
+          .then(function (response) {
+              me.ExcelFormats = response.data.data;
+              console.log(response);
+              console.log(me.ExcelFormats);
+          })
+          .catch(function (error) {
 
-              console.log(error);
-            })
-            .finally(function () {
+            console.log(error);
+          })
+          .finally(function () {
 
-            });
-  },
-  methods:{
-      showList(){
-      }
+          });
   }
 }
 </script>
