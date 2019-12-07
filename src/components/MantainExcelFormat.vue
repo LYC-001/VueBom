@@ -62,8 +62,8 @@
     </el-main>
 
     <!-- 弹出窗体Excel -->
-    <el-dialog title="Excel模版" :visible.sync="dialogExcelVisible" :close-on-click-modal=false> 
-            <el-form ref="formExcel" :model="formExcel" label-width="120px" size="mini">
+    <el-dialog title="Excel模版" :visible.sync="dialogExcelVisible"  :close-on-click-modal=false> 
+            <el-form ref="formExcel" :model="formExcel" :rules="formRules" label-width="120px" size="mini">
               <el-row type="flex">
                 <el-col :span=12>
                     <el-form-item label="模版编码" style="font-size=8px" prop="formatNo">
@@ -88,7 +88,7 @@
                 </el-col>
                 <el-col :span=12>
                     <el-form-item label="配方号[坐标]" style="font-size=8px" prop="idNoPos">
-                          <el-input size ="mini" v-model="formExcel.idNoPos" placeholder="例‘A1’ ">
+                          <el-input size ="mini" v-model="formExcel.idNoPos" placeholder="">
                           </el-input>
                     </el-form-item>  
                 </el-col>
@@ -128,39 +128,64 @@
               </el-row>
           </el-form>
         <el-row>
-            <el-button size="mini" type="success" @click="saveExcel">保存</el-button>
+            <el-button size="mini" type="success" @click="beforeSaveExcel">保存</el-button>
             <el-button size="mini" type="" @click="cancelExcel">取消</el-button>
         </el-row>
     </el-dialog>
 
     <!-- 弹出窗体－字段明细 -->
-    <el-dialog title="Bom表头" :visible.sync="dialogBomHeaderVisible" :close-on-click-modal=false > 
+    <el-dialog title="Bom表头" :visible.sync="dialogDtlVisible" :close-on-click-modal=false > 
         <el-row>
-            <el-button  size="mini" type="primary" >添加</el-button>
-            <el-button  size="mini" type="danger">删除</el-button>
-            <el-button  size="mini" type="success">保存</el-button>
+            <el-button  size="mini" type="primary" @click="insertDtlRow">插入</el-button>
+            <el-button  size="mini" type="success" @click="saveDtls">保存</el-button>
         </el-row>
-        <el-table
-                size="mini"
-                <!-- :data="tableData" -->
-                stripe
-                style="width: 100%;height=600px">
-                <el-table-column
-                prop="date"
-                label="日期2"
-                width="180">
-                </el-table-column>
-                <el-table-column
-                prop="name"
-                label="姓名"
-                width="180">
-                </el-table-column>
-                <el-table-column
-                    prop="address"
-                    label="地址">
-                </el-table-column>
-               
-          </el-table>
+
+        <el-table size="mini":data="tableDataDtl" stripe style="width: 100%;height=600px">
+          <el-table-column prop="cell_type" label="数据类型" width="120">
+              <template slot-scope="scope">
+                <!-- :disabled="scope.row.cell_type=='SYS' && scope.row.id > 0" -->
+                  <el-select size ="mini"  v-model="scope.row.cell_type" placeholder="请选择">
+                    <el-option key="SYS" value="SYS" label='SYS.系统保留'></el-option>
+                    <el-option key="DIY" value="DIY" label='DIY.系统自定义'></el-option>
+                    <el-option key="SHOW" value="SHOW" label='SHOW.显示字段'></el-option>
+                  </el-select>
+              </template>
+          </el-table-column>
+          <el-table-column prop="diy_type" label="DIY位置" width="120">
+            <template slot-scope="scope">
+                <el-select size ="mini" v-model="scope.row.diy_type" clearable placeholder="">
+                  <el-option key="1" value="1" label='1.BOM表头自定义'></el-option>
+                  <el-option key="2" value="2" label='2.BOM表身自定义'></el-option>
+                  <el-option key="3" value="3" label='2.二者'></el-option>
+                </el-select>
+            </template>
+        </el-table-column>
+          <el-table-column prop="cell_index" label="列Y" width="60">
+              <template slot-scope="scope">
+                <el-input-number size="mini" :controls=false :precision=0 :min="1" v-model="scope.row.cell_index" placeholder="例‘3’ "></el-input-number>
+              </template>
+          </el-table-column>
+          <el-table-column prop="field_no" label="字段编码" width="120">
+              <template slot-scope="scope">
+                <el-input size ="mini" v-model="scope.row.field_no" placeholder=""></el-input>
+              </template>
+          </el-table-column>
+          <el-table-column prop="field_name" label="字段名" width="120">
+              <template slot-scope="scope">
+                <el-input size ="mini" v-model="scope.row.field_name" placeholder=""></el-input>
+              </template>
+          </el-table-column>
+          <el-table-column prop="check_exist" label="检查资料" width="150">
+              <template slot-scope="scope">
+                <el-input size ="mini" v-model="scope.row.check_exist" placeholder=""></el-input>
+              </template>
+          </el-table-column>
+          <el-table-column label="操作" width="200">
+              <template slot-scope="scope">
+                  <el-button size="mini" type="primary" @click="removeDtlRow(scope.$index, scope.row)">移除</el-button>
+              </template>
+          </el-table-column>
+        </el-table>
     </el-dialog>
   </el-container>
    
@@ -168,7 +193,6 @@
 
 <script>
 const axios = require('axios').default;
- 
 // import Top from './Top.vue'
 export default {
   name: 'HelloWorld',
@@ -185,22 +209,26 @@ export default {
           startRow:3,
           bomStructCell:2
       },
+      formRules:{
+        formatNo: [{ required: true, message: '请输入', trigger: 'blur' }],
+        prdNoPos: [{ required: true, message: '请输入', trigger: 'blur' }],
+        deptNoPos: [{ required: true, message: '请输入', trigger: 'blur' }]
+      },
       dialogExcelVisible:false,
-      dialogBomHeaderVisible:false,
-      dialogBomBodyVisible:false,
+      dialogDtlVisible:false,
       selectingRow: null,
-      tableData: [ ]
+      tableData: [ ],
+      tableDataDtl:[]
     }
   },
   components:{
   },
   mounted(){
     var me = this;
-    
   },
   methods:{
      rowClick:function(row, column, event){
-       console.log('rowClick');
+       
         this.selectingRow = row;
      },
      currentChange:function(){
@@ -211,7 +239,7 @@ export default {
         //console.log('addExcel');
         //console.log(this);
         this.dialogExcelVisible = true;
-        this.dialogBomHeaderVisible = false;
+        this.dialogDtlVisible = false;
 
         this.formExcelEdit = false;
         this.formExcel.id = -1;
@@ -227,27 +255,17 @@ export default {
      editExcel:function(){
        var me =this;
         me.dialogExcelVisible = true;
-        me.dialogBomHeaderVisible = false;
+        me.dialogDtlVisible = false;
 
          if(!me.selectingRow)
             return;
           
        
-        console.log(me.selectingRow);
+        //console.log(me.selectingRow);
         me.selectingRowData = JSON.parse(JSON.stringify(me.selectingRow));
         //console.log(b);
         //me.formExcel = me.selectingRowData;
          me.deepClone(me.formExcel, me.selectingRowData);
-
-        // me.formExcel.id = me.selectingRow.id;
-        // me.formExcel.formatNo =me.selectingRow.formatNo;
-        // me.formExcel.prdNoPos = me.selectingRow.prdNoPos;
-        // me.formExcel.deptNoPos = me.selectingRow.deptNoPos;
-        // me.formExcel.idNoPos = me.selectingRow.idNoPos;
-        // me.formExcel.whFormType = me.selectingRow.whFormType;
-        // me.formExcel.bomPlace = me.selectingRow.bomPlace
-        // me.formExcel.startRow = me.selectingRow.startRow;
-        // me.formExcel.bomStructCell = me.selectingRow.bomStructCell;
      },
      deepClone:function(targerObj,  obj){
           //定义对象来判断当前的参数是数组还是对象
@@ -268,8 +286,17 @@ export default {
           }	
           return targerObj;
       } ,
+     beforeSaveExcel:function(){
+        var me = this;
+        this.$refs["formExcel"].validate((valid) => {
+            if (valid) {
+              me.saveExcel();
+            } else {
+              return false;
+            }
+          });
+     },
      saveExcel:function(){
-       
        var me = this;
        let isNew = me.formExcel.id == -1 ? true :false;
 
@@ -281,7 +308,7 @@ export default {
                   me.deepClone(me.selectingRow, response.data.data);
                   //me.selectingRow = response.data.data;
               }
-
+              me.onLoad();
               //me.formExcel.id = response.data.id;
               me.$message({
                 message: '保存成功!',
@@ -294,13 +321,10 @@ export default {
                   type: 'warning'
                 });
             }
-            // me.dialogExcelVisible = false;
           }).catch(function (error) {console.log(error);}).finally(function () {          });
      },
      removeExcel:function(){
        var me = this;
-  
-
         axios.get("http://localhost:61106/api/bom/RemoveExcelFormat",  {
             params: {
               idxxx: me.selectingRow.id
@@ -334,15 +358,87 @@ export default {
           }).catch(function (error) {console.log(error);}).finally(function () {          });
      },
      cancelExcel:function(){
-        console.log(this.$refs["formExcel"]);
+        //console.log(this.$refs["formExcel"]);
         this.$refs["formExcel"].resetFields();
         this.dialogExcelVisible = false;
      },
      handleEdit:function(index, row){
+         var me = this;
         
-         this.dialogExcelVisible = false;
-         this.dialogBomHeaderVisible = true;
-         console.log(arguments);
+        axios.get("http://localhost:61106/api/bom/GetDtls",{
+            params:{
+              HeaderId:row.id
+            }
+          })
+          .then(function (response) {
+              me.tableDataDtl = response.data.data;
+              //console.log(me.tableDataDtl);
+
+              me.dialogExcelVisible = false;
+              me.dialogDtlVisible = true;
+
+          }).catch(function (error) {console.log(error);}).finally(function () {});
+     },
+     insertDtlRow:function(){
+        var me = this;
+        me.tableDataDtl.push({
+            id : -1,
+            diy_type: "",
+            cell_type:'SHOW',
+        });
+     },
+     removeDtlRow:function(index, row){
+        var me = this;
+        me.tableDataDtl.splice(index, 1);
+     },
+     saveDtls:function(){
+        let me = this;
+
+        for(var i = 0;i< me.tableDataDtl.length; ++i){
+          //console.log(me.tableDataDtl[i].fieldNo);
+          if(me.tableDataDtl[i].cell_type == "DIY" && !me.tableDataDtl[i].diy_type ){
+              me.$message({
+                message: 'DIY字段，需要指定DIY位置!',
+                type: 'warning'
+              });
+              return false;
+          }
+          
+          if(!me.tableDataDtl[i].cell_type 
+              || !me.tableDataDtl[i].cell_index  
+              || !me.tableDataDtl[i].field_no 
+              || !me.tableDataDtl[i].field_name){
+              
+               me.$message({
+                message: '字段输入不完整!',
+                type: 'warning'
+              });
+              return false;
+          }
+
+          me.tableDataDtl[i].field_no = me.tableDataDtl[i].field_no.toLowerCase();
+        }
+
+        axios.post("http://localhost:61106/api/bom/SaveBomFormatDetail",{
+            HeaderId: me.selectingRow.id,
+            Dtls: me.tableDataDtl
+          })
+          .then(function (response) {
+              if(response.data.code == 200){
+                me.$message({
+                  message: '字段明细保存成功!',
+                  type: 'success'
+                });
+                me.dialogDtlVisible = false;
+              }
+              else{
+                  me.$message({
+                    message: '失败:' + response.data.message,
+                    type: 'warning'
+                  });
+              }
+          }).catch(function (error) {console.log(error);}).finally(function () {});
+
      },
      onLoad:function(){
         var me = this;
@@ -367,9 +463,9 @@ export default {
 
 
 <style scoped>
-  /* .MaintinExcelFormat_lyc /deep/ .el-input-number--mini {
-      width: 60px;
+  .MaintinExcelFormat_lyc /deep/ .el-input-number--mini {
+      width: 50px;
       line-height: 26px;
-  } */
+  }
  
 </style>

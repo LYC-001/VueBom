@@ -25,14 +25,20 @@
 				模版编码 	"标准样式"
 				配方号*		-1		BOM_NO		
 				物料编码*   3       PRD_NO    					检查存在 PRDT.PRD_NO
-				物料名称*   4       PRD_NAME  
+				物料名称*   4       NAME  
 				标准用量*   5       QTY
 				部门编码*	7	    DEP_NO						检查存在 DEPT.DEP_NO
 				部门名称	6		DEP_NAME		外(2)
 				Z_颜色		8		Z_COLOR			系统自定义(1)  
 				Z_机头型号	9		Z_MA_NUMBER		系统自定义(1)  
 				备注		10		REM				
-				
+				[SugarColumn(ColumnName = "Excel_Id", ColumnDescription = "所属父Id")]
+				[SugarColumn(ColumnName = "Cell_Index", ColumnDescription = "列Y坐标")]
+				[SugarColumn(ColumnName = "Diy_Type", ColumnDescription = "DIY位置[1.BOM表头自定义 2.BOM表身自定义, 3.二者]")]
+				 [SugarColumn(ColumnName = "field_name", ColumnDescription = "字段名")]
+				 [SugarColumn(ColumnName = "field_no", ColumnDescription = "字段编码")]
+				 [SugarColumn(ColumnName = "cell_type", ColumnDescription = "SYS:必须, DIY:系统自定义(1), SHOW:显示字段")]
+				 [SugarColumn(ColumnName = "Check_Exist", ColumnDescription = "检查资料")]
 			BOM表身
 				
 				模版编码 	"标准样式"
@@ -63,22 +69,24 @@
 		
 		
 		
-	选订Bom任务拆分				   A
+	订单Bom选配				   A
 		在订单介面,下拉选择时,需不需要支持多选?
 		如果被替换的是个半成品Bom A, 并且Bom A下面也有一个X0001替换品货号,这种情况要不要考虑?
-	
-	
+		订单介面，要不要考虑 T8权限？ 
+				删除 ：T8删除有权限吗？ 只能删除自己 的？  
+				查询 ：内部员工，不能查询另的客户订单 。
+				还有其他？
 	
 	
 	导入工具任务
 		仓库取值 	    1.货品信息默认仓库? 		潮: Excel上没有指定仓库,是不是直接用 默认仓库?
 		阶级用 	1.1  1.2 用户会不会觉得麻烦?   		潮:我还是建议用回 原来阶级
-	
-	选订Bom任务拆分				   A
+		
+	选订Bom任务拆分				   					A
 		在订单介面,下拉选择时,需不需要支持多选?
 		如果被替换的是个半成品Bom A, 并且Bom A下面也有一个X0001替换品货号,这种情况要不要考虑?
 	
-	什么时候方便给我安装 T8,与Sunlike?   OK
+	什么时候方便给我安装 T8,与Sunlike?   			OK
 
 12.1
 12.2
@@ -96,10 +104,11 @@
 
 	GO
 	 
-		CREATE TABLE [dbo].[GAO_BOMFormat_Header](
+	CREATE TABLE [dbo].[GAO_BomFormat_Dtl](
 		[id] [int] IDENTITY(100,2) NOT NULL,
 		[excel_id] [int] ,
-		[type] [int] ,
+		cell_index int,
+		[diy_type] [varchar](30) ,
 		[field_name] [varchar](30) NULL,
 		[field_no] [varchar](30) NULL,
 		[cell_type] [varchar](30) NOT NULL,
@@ -115,3 +124,9 @@
 	  <el-input placeholder="请输入内容" v-model="input2">
 		<template slot="append">.com</template>
 	  </el-input>
+	  
+12.7
+    Excel转成DT				A
+	DT 在UI 演示			OK
+	
+	
